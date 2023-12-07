@@ -20,6 +20,19 @@ async function startGame(req, res){
     }
 }
 
+async function getGame(req, res){
+    try{
+        const gameId = req.user.game_id;
+        const game = await Game.findByPk(gameId);
+        if(!game) return res.status(StatusCodes.NOT_FOUND).json({message: "Game not found"});
+        return res.status(StatusCodes.OK).json({game: game.toJSON()});
+    }catch (e){
+        console.log(e);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: ReasonPhrases.INTERNAL_SERVER_ERROR});
+    }
+}
+
 module.exports = {
     startGame,
+    getGame,
 };
