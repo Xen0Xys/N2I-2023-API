@@ -51,7 +51,7 @@ describe("User tests", async() => {
     });
     it("Check login", async() => {
         const res = await chai.request(api).get("/api/v1/login").set("Authorization", "Bearer " + token);
-        expect(res).to.have.status(StatusCodes.OK);
+        expect(res).to.have.status(StatusCodes.ACCEPTED);
         expect(res.body).to.be.an("object");
         expect(res.body).to.have.property("id");
         expect(res.body).to.have.property("username");
