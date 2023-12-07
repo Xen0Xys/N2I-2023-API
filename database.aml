@@ -1,0 +1,60 @@
+users
+  id int pk
+  username varchar
+  password varchar
+
+games
+  id int pk
+  user_id fk users.id
+  score int | The current score of the game
+  current_progress int | The game number the user is on
+
+quiz_data
+  id int pk
+  image varchar nullable | As dataurl
+  question varchar
+  right_answer varchar
+  wrong_answer_1 varchar
+  wrong_answer_2 varchar
+  wrong_answer_3 varchar
+
+right_price_data
+  id int pk
+  image varchar nullable | As dataurl
+  question varchar
+  good_value int
+  order_of_magnitude varchar
+
+memory_data
+  id int pk
+  image varchar | As dataurl
+
+info_data
+  id int pk
+  type varchar | image or video
+  url varchar | Can be dataurl or video url
+  title varchar
+  content varchar
+
+quiz_rounds
+  id int pk
+  game_id fk games.id
+  quiz_data_id fk quiz_data.id
+  current_score int
+
+right_price_rounds
+  id int pk
+  game_id fk games.id
+  right_price_data_id fk right_price_data.id
+  current_score int
+
+memory_rounds
+  id int pk
+  game_id fk games.id
+  memory_data varchar | The memory set as a formatted string
+  current_score int
+
+info_rounds
+  id int pk
+  game_id fk games.id
+  info_data_id fk info_data.id
