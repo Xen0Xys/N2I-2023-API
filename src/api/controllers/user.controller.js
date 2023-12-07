@@ -1,68 +1,58 @@
 const {StatusCodes, ReasonPhrases} = require("http-status-codes");
 const {User} = require("@database/database");
-const {getFlag} = require("@services/user.service");
-const {hashPassword} = require("../../lib/utils/encryption");
+const encryption = require("@utils/encryption");
 
-async function getUser(req, res){
-    const userId = req.params.id;
+async function checkUserLogin(req, res){
     try{
-        const user = await User.findOne({where: {id: userId}});
-        if(!user)
-            return res.status(StatusCodes.NOT_FOUND).json({message: ReasonPhrases.NOT_FOUND});
-        const jsonUser = user.toJSON();
-        jsonUser.flag = await getFlag(jsonUser.countryCode);
-        delete jsonUser.password;
-        return res.status(StatusCodes.OK).json(jsonUser);
+        return res.status(StatusCodes.OK).json(req.user);
     }catch (e){
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(e);
+        console.log(e);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: ReasonPhrases.INTERNAL_SERVER_ERROR});
     }
 }
 
 async function createUser(req, res){
-    const {firstName, lastName, countryCode, email, password, groupId} = req.body;
-    const passwordHash = await hashPassword(password);
     try{
-        const user = await User.create({firstName, lastName, countryCode, email, password: passwordHash, groupId});
+        const {username, password} = req.body;
+        const hashedPassword = await encryption.hashPassword(password, 12);
+        // Check if user already exists
+        const userExists = await User.findOne({where: {username: username}});
+        if(userExists) return res.status(StatusCodes.CONFLICT).json({message: "User already exists"});
+        // Create user
+        const user = await User.create({username: username, password: hashedPassword});
         const jsonUser = user.toJSON();
-        jsonUser.flag = await getFlag(jsonUser.countryCode);
         delete jsonUser.password;
         return res.status(StatusCodes.CREATED).json(jsonUser);
     }catch (e){
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(e);
+        console.log(e);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: ReasonPhrases.INTERNAL_SERVER_ERROR});
     }
 }
 
-async function removeUser(req, res){
-    const id = req.params.id;
-    try {
-        const user = await User.findOne({where: {id}});
-        if (!user)
-            return res.status(StatusCodes.NOT_FOUND).json({message: ReasonPhrases.NOT_FOUND});
-        await user.destroy();
-        return res.status(StatusCodes.NO_CONTENT).json();
-    }catch (e){
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(e);
-    }
-}
-
-async function getUsers(req, res){
+async function loginUser(req, res){
     try{
-        const users = await User.findAll();
-        const jsonUsers = users.map(user => {
+        const {username, password} = req.body;
+        // Check if user exists
+        const user = await User.findOne({where: {username: username}});
+        if(!user) return res.status(StatusCodes.NOT_FOUND).json({message: "User not found"});
+        // Check if password is correct
+        if(await encryption.comparePassword(user.password, password)){
+            const token = encryption.generateJWT({id: user.id}, process.env.TOKEN_DURATION, process.env.JWT_KEY, true);
             const jsonUser = user.toJSON();
             delete jsonUser.password;
-            return jsonUser;
-        });
-        return res.status(StatusCodes.OK).json(jsonUsers);
+            jsonUser.token = token;
+            return res.status(StatusCodes.ACCEPTED).json(jsonUser);
+        }
+        return res.status(StatusCodes.UNAUTHORIZED).json({message: "Invalid password"});
     }catch (e){
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(e);
+        console.log(e);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: ReasonPhrases.INTERNAL_SERVER_ERROR});
     }
 }
 
 module.exports = {
-    getUser,
+    checkUserLogin,
     createUser,
-    removeUser,
-    getUsers
+    loginUser,
 };
 
