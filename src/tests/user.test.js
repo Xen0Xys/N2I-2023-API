@@ -42,7 +42,7 @@ describe("User tests", async() => {
     });
     it("User login", async() => {
         const res = await chai.request(api).post("/api/v1/login").send(testUser);
-        expect(res).to.have.status(StatusCodes.ACCEPTED);
+        expect(res).to.have.status(StatusCodes.OK);
         expect(res.body).to.be.an("object");
         expect(res.body).to.have.property("id");
         expect(res.body).to.have.property("username");

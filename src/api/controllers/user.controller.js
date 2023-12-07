@@ -4,7 +4,7 @@ const encryption = require("@utils/encryption");
 
 async function checkUserLogin(req, res){
     try{
-        return res.status(StatusCodes.OK).json(req.user);
+        return res.status(StatusCodes.ACCEPTED).json(req.user);
     }catch (e){
         console.log(e);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: ReasonPhrases.INTERNAL_SERVER_ERROR});
@@ -41,7 +41,7 @@ async function loginUser(req, res){
             const jsonUser = user.toJSON();
             delete jsonUser.password;
             jsonUser.token = token;
-            return res.status(StatusCodes.ACCEPTED).json(jsonUser);
+            return res.status(StatusCodes.OK).json(jsonUser);
         }
         return res.status(StatusCodes.UNAUTHORIZED).json({message: "Invalid password"});
     }catch (e){
