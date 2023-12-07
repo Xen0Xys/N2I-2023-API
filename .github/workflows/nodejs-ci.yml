@@ -49,9 +49,9 @@ jobs:
       - name: Build and Push Docker Image
         if: env.SECRET_NOT_DEFINED != 'true'
         run: |
-          docker build -t my-api .
+          docker build -t n2i-2023-api .
           docker login -u xen0xys -p ${{ secrets.DOCKER_PASSWORD }}
-          docker tag my-api:latest xen0xys/n2i-2023-api:latest
+          docker tag n2i-2023-api:latest xen0xys/n2i-2023-api:latest
           docker push xen0xys/n2i-2023-api:latest
       - name: SSH into Server and Deploy
         if: env.SECRET_NOT_DEFINED != 'true'
