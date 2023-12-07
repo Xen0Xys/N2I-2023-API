@@ -4,73 +4,58 @@ const {Joi} = require("express-validation");
 const {generateJWT} = require("../lib/utils/encryption");
 const {api, expect, chai} = testConfig;
 
-const testToken = generateJWT({id: 1}, process.env.TOKEN_DURATION, process.env.JWT_KEY, true);
 const testUser = {
-    firstName: "Test",
-    lastName: "User",
-    countryCode: "US",
-    email: "test.email@example.fr",
-    groupId: 1,
-    password: "123456"
+    username: "Test",
+    password: "Test"
 };
-const userValidation = Joi.object({
-    id: Joi.number().required(),
-    firstName: Joi.string().required(),
-    lastName: Joi.string().required(),
-    email: Joi.string().email().required(),
-    countryCode: Joi.string(),
-    flag: Joi.string(),
-    groupId: Joi.number().required(),
-    createdAt: Joi.date().iso().required(),
-    updatedAt: Joi.date().iso().required(),
-});
 
+// const res = await chai.request(api).get("/api/v1/user/1").set("Authorization", "Bearer " + testToken);
+let token;
 describe("User tests", async() => {
-    it("Get user from id", async() => {
-        const res = await chai.request(api).get("/api/v1/user/1").set("Authorization", "Bearer " + testToken);
-        expect(res).to.have.status(StatusCodes.OK);
-        Joi.assert(res.body, userValidation);
+    it("User creation", async() => {
+        const res = await chai.request(api).post("/api/v1/user").send(testUser);
+        expect(res).to.have.status(StatusCodes.CREATED);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("id");
+        expect(res.body).to.have.property("username");
     });
-    it("Get user with non-numeric id", async() => {
-        const res = await chai.request(api).get("/api/v1/user/test").set("Authorization", "Bearer " + testToken);
+    it("Check login without token", async() => {
+        const res = await chai.request(api).get("/api/v1/login");
+        expect(res).to.have.status(StatusCodes.UNAUTHORIZED);
+    });
+    it("Check login with invalid token", async() => {
+        const res = await chai.request(api).get("/api/v1/login").set("Authorization", "Bearer " + "invalid");
+        expect(res).to.have.status(StatusCodes.UNAUTHORIZED);
+    });
+    it("User login with no body", async() => {
+        const res = await chai.request(api).post("/api/v1/login");
         expect(res).to.have.status(StatusCodes.BAD_REQUEST);
-        expect(res.body).to.have.property("message");
+        token = res.body.token;
     });
-    it("Get user with no authentication", async() => {
-        const res = await chai.request(api).get("/api/v1/user/test");
+    it("User login with no existing username", async() => {
+        const res = await chai.request(api).post("/api/v1/login").send({username: "invalid", password: "invalid"});
+        expect(res).to.have.status(StatusCodes.NOT_FOUND);
+        token = res.body.token;
+    });
+    it("User login with wrong password", async() => {
+        const res = await chai.request(api).post("/api/v1/login").send({username: "Test", password: "invalid"});
         expect(res).to.have.status(StatusCodes.UNAUTHORIZED);
+        token = res.body.token;
     });
-    it("Create new user", async() => {
-        const postRes = await chai.request(api).post("/api/v1/user").send(testUser);
-        expect(postRes).to.have.status(StatusCodes.CREATED);
-        Joi.assert(postRes.body, userValidation);
-        const getRes = await chai.request(api).get("/api/v1/user/4").set("Authorization", "Bearer " + testToken);
-        expect(getRes).to.have.status(StatusCodes.OK);
+    it("User login", async() => {
+        const res = await chai.request(api).post("/api/v1/login").send(testUser);
+        expect(res).to.have.status(StatusCodes.ACCEPTED);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("id");
+        expect(res.body).to.have.property("username");
+        expect(res.body).to.have.property("token");
+        token = res.body.token;
     });
-    it("Create new user without required fields", async() => {
-        const res = await chai.request(api).post("/api/v1/user");
-        expect(res).to.have.status(StatusCodes.BAD_REQUEST);
-    });
-    it("Get users", async() => {
-        const res = await chai.request(api).get("/api/v1/users").set("Authorization", "Bearer " + testToken);
+    it("Check login", async() => {
+        const res = await chai.request(api).get("/api/v1/login").set("Authorization", "Bearer " + token);
         expect(res).to.have.status(StatusCodes.OK);
-        expect(res.body).to.be.an("array");
-        expect(res.body).to.have.lengthOf(4);
-        for(let i = 0; i < res.body.length; i++)
-            Joi.assert(res.body[i], userValidation);
-    });
-    it("Get users without authentication", async() => {
-        const res = await chai.request(api).get("/api/v1/users");
-        expect(res).to.have.status(StatusCodes.UNAUTHORIZED);
-    });
-    it("Delete user", async() => {
-        const deleteRes = await chai.request(api).delete("/api/v1/user/4").set("Authorization", "Bearer " + testToken);
-        expect(deleteRes).to.have.status(StatusCodes.NO_CONTENT);
-        const getRes = await chai.request(api).get("/api/v1/user/4").set("Authorization", "Bearer " + testToken);
-        expect(getRes).to.have.status(StatusCodes.NOT_FOUND);
-    });
-    it("Delete user without authentication", async() => {
-        const res = await chai.request(api).delete("/api/v1/user/4");
-        expect(res).to.have.status(StatusCodes.UNAUTHORIZED);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("id");
+        expect(res.body).to.have.property("username");
     });
 });
