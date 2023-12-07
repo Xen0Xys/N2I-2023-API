@@ -23,7 +23,7 @@ right_price_data
   id int pk
   image varchar nullable | As dataurl
   question varchar
-  good_value int
+  answer int
   order_of_magnitude varchar
 
 memory_data
