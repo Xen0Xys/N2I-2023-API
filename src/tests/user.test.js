@@ -1,7 +1,5 @@
 const {StatusCodes} = require("http-status-codes");
 const testConfig = require("./config");
-const {Joi} = require("express-validation");
-const {generateJWT} = require("../lib/utils/encryption");
 const {api, expect, chai} = testConfig;
 
 const testUser = {
