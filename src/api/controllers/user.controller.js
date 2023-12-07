@@ -1,5 +1,5 @@
 const {StatusCodes, ReasonPhrases} = require("http-status-codes");
-const {User} = require("@database/database");
+const {User, Game} = require("@database/database");
 const encryption = require("@utils/encryption");
 
 async function checkUserLogin(req, res){
@@ -38,7 +38,12 @@ async function loginUser(req, res){
         if(!user) return res.status(StatusCodes.NOT_FOUND).json({message: "User not found"});
         // Check if password is correct
         if(await encryption.comparePassword(user.password, password)){
-            const token = encryption.generateJWT({id: user.id}, process.env.TOKEN_DURATION, process.env.JWT_KEY, true);
+            const tokenContent = {id: user.id};
+            // Check if game is already started
+            const game = await Game.findOne({where: {user_id: user.id, is_finished: false}});
+            if(game)
+                tokenContent.game_id = game.id;
+            const token = encryption.generateJWT(tokenContent, process.env.TOKEN_DURATION, process.env.JWT_KEY, true);
             const jsonUser = user.toJSON();
             delete jsonUser.password;
             jsonUser.token = token;

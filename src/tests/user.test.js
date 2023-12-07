@@ -1,5 +1,6 @@
 const {StatusCodes} = require("http-status-codes");
 const testConfig = require("./config");
+const jwt = require("jsonwebtoken");
 const {api, expect, chai} = testConfig;
 
 const testUser = {
@@ -17,6 +18,10 @@ describe("User tests", async() => {
         expect(res.body).to.have.property("id");
         expect(res.body).to.have.property("username");
         expect(res.body).to.have.property("token");
+        // Check that token only have id
+        const decodedToken = jwt.decode(res.body.token);
+        expect(decodedToken).to.have.property("id");
+        expect(decodedToken).to.not.have.property("game_id");
     });
     it("Check login without token", async() => {
         const res = await chai.request(api).get("/api/v1/login");
