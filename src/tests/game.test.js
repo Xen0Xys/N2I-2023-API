@@ -26,6 +26,19 @@ describe("Game tests", async() => {
 
         testUser = res.body;
     });
+    it("Get game without token", async() => {
+        const res = await chai.request(api).get("/api/v1/game");
+        expect(res).to.have.status(StatusCodes.UNAUTHORIZED);
+    });
+    it("Get game with invalid token", async() => {
+        const res = await chai.request(api).get("/api/v1/game").set("Authorization", "Bearer " + "invalid");
+        expect(res).to.have.status(StatusCodes.UNAUTHORIZED);
+    });
+    it("Get game with only id in token", async() => {
+        const token = jwt.sign({id: testUser.id}, process.env.JWT_KEY, {expiresIn: process.env.TOKEN_DURATION});
+        const res = await chai.request(api).get("/api/v1/game").set("Authorization", "Bearer " + token);
+        expect(res).to.have.status(StatusCodes.UNAUTHORIZED);
+    });
     it("Start game without token", async() => {
         const res = await chai.request(api).post("/api/v1/game");
         expect(res).to.have.status(StatusCodes.UNAUTHORIZED);
@@ -48,6 +61,20 @@ describe("Game tests", async() => {
         const decodedToken = jwt.decode(res.body.token);
         expect(decodedToken).to.have.property("id");
         expect(decodedToken).to.have.property("game_id");
+        testUser.token = res.body.token;
+    });
+    it("Get game", async() => {
+        const res = await chai.request(api).get("/api/v1/game").set("Authorization", "Bearer " + testUser.token);
+        expect(res).to.have.status(StatusCodes.OK);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("game");
+        expect(res.body.game).to.be.an("object");
+        expect(res.body.game).to.have.property("id");
+        expect(res.body.game).to.have.property("user_id");
+        expect(res.body.game).to.have.property("score");
+        expect(res.body.game).to.have.property("current_progress");
+        expect(res.body.game).to.have.property("is_finished");
+        expect(res.body.game.id).to.equal(gameId);
     });
     it("Start game with active game", async() => {
         const res = await chai.request(api).post("/api/v1/game").set("Authorization", "Bearer " + testUser.token);
