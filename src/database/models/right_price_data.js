@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
 const {Model} = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-    class right_price_data extends Model{
+    class RightPriceData extends Model{
         static associate(models){
 
         }
     }
-    right_price_data.init({
+    RightPriceData.init({
         image: DataTypes.STRING,
         question: DataTypes.STRING,
         answer: DataTypes.INTEGER,
@@ -17,5 +17,5 @@ module.exports = (sequelize, DataTypes) => {
         createdAt: "created_at",
         updatedAt: "updated_at",
     });
-    return right_price_data;
+    return RightPriceData;
 };
