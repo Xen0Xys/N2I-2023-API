@@ -32,14 +32,22 @@ describe("Game tests", async() => {
         const res = await chai.request(api).post("/api/v1/game").set("Authorization", "Bearer " + testUser.token);
         expect(res).to.have.status(StatusCodes.OK);
         expect(res.body).to.be.an("object");
-        expect(res.body).to.have.property("gameId");
-        gameId = res.body.gameId;
+        expect(res.body).to.have.property("id");
+        expect(res.body).to.have.property("user_id");
+        expect(res.body).to.have.property("score");
+        expect(res.body).to.have.property("current_progress");
+        expect(res.body).to.have.property("is_finished");
+        gameId = res.body.id;
     });
     it("Start game with active game", async() => {
         const res = await chai.request(api).post("/api/v1/game").set("Authorization", "Bearer " + testUser.token);
         expect(res).to.have.status(StatusCodes.OK);
         expect(res.body).to.be.an("object");
-        expect(res.body).to.have.property("gameId");
+        expect(res.body).to.have.property("id");
+        expect(res.body).to.have.property("user_id");
+        expect(res.body).to.have.property("score");
+        expect(res.body).to.have.property("current_progress");
+        expect(res.body).to.have.property("is_finished");
         expect(res.body.gameId).to.not.equal(gameId);
     });
     it("Check if user have active game", async() => {
@@ -48,6 +56,6 @@ describe("Game tests", async() => {
         expect(res.body).to.be.an("object");
         expect(res.body).to.have.property("id");
         expect(res.body).to.have.property("username");
-        expect(res.body).to.have.property("gameId");
+        expect(res.body).to.have.property("game_id");
     });
 });

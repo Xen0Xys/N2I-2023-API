@@ -22,7 +22,7 @@ module.exports = async(req, res, next) => {
         delete jsonUser.password;
         // Check if game is active
         const activeGame = await Game.findOne({where: {is_finished: false, user_id: user.id}});
-        if(activeGame) jsonUser.gameId = activeGame.id;
+        if(activeGame) jsonUser.game_id = activeGame.id;
         req.user = jsonUser;
         next();
     }catch (e){

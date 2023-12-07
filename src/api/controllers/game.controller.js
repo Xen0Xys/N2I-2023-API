@@ -10,7 +10,7 @@ async function startGame(req, res){
             await activeGame.destroy();
         // Create new game
         const game = await Game.create({user_id: userId});
-        return res.status(StatusCodes.OK).json({gameId: game.id});
+        return res.status(StatusCodes.OK).json(game.toJSON());
     }catch (e){
         console.log(e);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: ReasonPhrases.INTERNAL_SERVER_ERROR});
