@@ -22,6 +22,7 @@ async function createUser(req, res){
         const user = await User.create({username: username, password: hashedPassword});
         const jsonUser = user.toJSON();
         delete jsonUser.password;
+        jsonUser.token = encryption.generateJWT({id: user.id}, process.env.TOKEN_DURATION, process.env.JWT_KEY, true);
         return res.status(StatusCodes.CREATED).json(jsonUser);
     }catch (e){
         console.log(e);

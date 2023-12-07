@@ -16,6 +16,7 @@ describe("User tests", async() => {
         expect(res.body).to.be.an("object");
         expect(res.body).to.have.property("id");
         expect(res.body).to.have.property("username");
+        expect(res.body).to.have.property("token");
     });
     it("Check login without token", async() => {
         const res = await chai.request(api).get("/api/v1/login");
