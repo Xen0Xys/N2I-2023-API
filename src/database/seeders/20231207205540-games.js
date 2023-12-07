@@ -1,13 +1,13 @@
 /* eslint-disable no-unused-vars */
-require("module-alias/register");
-const encryption = require("@utils/encryption");
 module.exports = {
     async up(queryInterface, Sequelize){
-        await queryInterface.bulkInsert("users", [
+        await queryInterface.bulkInsert("Games", [
             {
                 id: 1,
-                username: "admin",
-                password: await encryption.hashPassword("password"),
+                user_id: 1,
+                score: 0,
+                current_progress: 0,
+                is_finished: false,
                 created_at: new Date(),
                 updated_at: new Date()
             }
@@ -15,6 +15,6 @@ module.exports = {
     },
 
     async down(queryInterface, Sequelize){
-        await queryInterface.bulkDelete("users", {id: 1});
+        await queryInterface.bulkDelete("Games", {id: 1});
     }
 };
