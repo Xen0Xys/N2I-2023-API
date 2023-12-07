@@ -1,5 +1,6 @@
 const {StatusCodes} = require("http-status-codes");
 const testConfig = require("./config");
+const jwt = require("jsonwebtoken");
 const {api, expect, chai} = testConfig;
 
 const testUserData = {
@@ -18,6 +19,11 @@ describe("Game tests", async() => {
         expect(res.body).to.have.property("id");
         expect(res.body).to.have.property("username");
         expect(res.body).to.have.property("token");
+        // Check that token only have id
+        const decodedToken = jwt.decode(res.body.token);
+        expect(decodedToken).to.have.property("id");
+        expect(decodedToken).to.not.have.property("game_id");
+
         testUser = res.body;
     });
     it("Start game without token", async() => {
@@ -32,22 +38,30 @@ describe("Game tests", async() => {
         const res = await chai.request(api).post("/api/v1/game").set("Authorization", "Bearer " + testUser.token);
         expect(res).to.have.status(StatusCodes.OK);
         expect(res.body).to.be.an("object");
-        expect(res.body).to.have.property("id");
-        expect(res.body).to.have.property("user_id");
-        expect(res.body).to.have.property("score");
-        expect(res.body).to.have.property("current_progress");
-        expect(res.body).to.have.property("is_finished");
-        gameId = res.body.id;
+        expect(res.body.game).to.be.an("object");
+        expect(res.body.game).to.have.property("id");
+        expect(res.body.game).to.have.property("user_id");
+        expect(res.body.game).to.have.property("score");
+        expect(res.body.game).to.have.property("current_progress");
+        expect(res.body.game).to.have.property("is_finished");
+        gameId = res.body.game.id;
+        const decodedToken = jwt.decode(res.body.token);
+        expect(decodedToken).to.have.property("id");
+        expect(decodedToken).to.have.property("game_id");
     });
     it("Start game with active game", async() => {
         const res = await chai.request(api).post("/api/v1/game").set("Authorization", "Bearer " + testUser.token);
         expect(res).to.have.status(StatusCodes.OK);
         expect(res.body).to.be.an("object");
-        expect(res.body).to.have.property("id");
-        expect(res.body).to.have.property("user_id");
-        expect(res.body).to.have.property("score");
-        expect(res.body).to.have.property("current_progress");
-        expect(res.body).to.have.property("is_finished");
+        expect(res.body.game).to.be.an("object");
+        expect(res.body.game).to.have.property("id");
+        expect(res.body.game).to.have.property("user_id");
+        expect(res.body.game).to.have.property("score");
+        expect(res.body.game).to.have.property("current_progress");
+        expect(res.body.game).to.have.property("is_finished");
+        const decodedToken = jwt.decode(res.body.token);
+        expect(decodedToken).to.have.property("id");
+        expect(decodedToken).to.have.property("game_id");
         expect(res.body.gameId).to.not.equal(gameId);
     });
     it("Check if user have active game", async() => {

@@ -1,5 +1,6 @@
 const {StatusCodes, ReasonPhrases} = require("http-status-codes");
 const {Game} = require("@database/database");
+const {generateJWT} = require("../../lib/utils/encryption");
 
 async function startGame(req, res){
     try{
@@ -10,7 +11,9 @@ async function startGame(req, res){
             await activeGame.destroy();
         // Create new game
         const game = await Game.create({user_id: userId});
-        return res.status(StatusCodes.OK).json(game.toJSON());
+        const token = generateJWT({id: userId, game_id: game.id}, process.env.TOKEN_DURATION, process.env.JWT_KEY, true);
+        const result = {game: game.toJSON(), token: token};
+        return res.status(StatusCodes.OK).json(result);
     }catch (e){
         console.log(e);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: ReasonPhrases.INTERNAL_SERVER_ERROR});
