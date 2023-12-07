@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 module.exports = {
     async up(queryInterface, Sequelize){
-        await queryInterface.createTable("Games", {
+        await queryInterface.createTable("games", {
             id: {
                 allowNull: false,
                 autoIncrement: true,
