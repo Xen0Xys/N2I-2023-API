@@ -9,9 +9,9 @@ let api;
 if(process.env.NODE_ENV !== "test"){
     process.env.NODE_ENV = "production";
     require("@handlers/migration.handler")(database).then(() => {
-        // require("@handlers/seeder.handler")(database).then(() => {
-        api = require("@api/api");
-        // });
+        require("@handlers/seeder.handler")(database).then(() => {
+            api = require("@api/api");
+        });
     });
 } else
     api = require("@api/api");
