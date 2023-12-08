@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const {Game, QuizData, QuizRounds, User} = require("@database/database");
+const {Game, QuizData, QuizRounds, InfoData, InfoRounds, RightPriceData, RightPriceRounds} = require("@database/database");
 
 const typeSuite = ["quiz", "right_price", "info", "right_price", "memory", "info", "quiz", "quiz", "right_price", "info"];
 
@@ -33,7 +33,6 @@ async function getNextRoundType(gameId){
 }
 
 async function generateQuizRound(gameId){
-    await Game.findAll();
     const quizData = await QuizData.findAll();
     const randomIndex = Math.floor(Math.random() * quizData.length);
     const currentQuizData = quizData[randomIndex];
@@ -53,7 +52,21 @@ async function generateQuizRound(gameId){
 }
 
 async function generateInfoRound(gameId){
-
+    const infoData = await InfoData.findAll();
+    const randomIndex = Math.floor(Math.random() * infoData.length);
+    const currentInfoData = infoData[randomIndex];
+    const round = await InfoRounds.create({
+        game_id: gameId,
+        info_data_id: currentInfoData.id,
+    });
+    return {
+        round_type: "info",
+        round_id: round.id,
+        type: currentInfoData.type,
+        url: currentInfoData.url,
+        title: currentInfoData.title,
+        content: currentInfoData.content
+    };
 }
 
 async function generateMemoryRound(gameId){
@@ -61,7 +74,20 @@ async function generateMemoryRound(gameId){
 }
 
 async function generateRightPriceRound(gameId){
-
+    const rightPriceData = await RightPriceData.findAll();
+    const randomIndex = Math.floor(Math.random() * rightPriceData.length);
+    const currentRightPriceData = rightPriceData[randomIndex];
+    const round = await RightPriceRounds.create({
+        game_id: gameId,
+        right_price_data_id: currentRightPriceData.id,
+    });
+    return {
+        round_type: "right_price",
+        round_id: round.id,
+        image: currentRightPriceData.image,
+        question: currentRightPriceData.question,
+        order_of_magnitude: currentRightPriceData.order_of_magnitude,
+    };
 }
 
 function shuffleList(list){
