@@ -54,7 +54,6 @@ describe("Game tests", async() => {
         expect(res.body.game).to.be.an("object");
         expect(res.body.game).to.have.property("id");
         expect(res.body.game).to.have.property("user_id");
-        expect(res.body.game).to.have.property("score");
         expect(res.body.game).to.have.property("current_progress");
         expect(res.body.game).to.have.property("is_finished");
         gameId = res.body.game.id;
@@ -66,6 +65,7 @@ describe("Game tests", async() => {
     it("Get game", async() => {
         const res = await chai.request(api).get("/api/v1/game").set("Authorization", "Bearer " + testUser.token);
         expect(res).to.have.status(StatusCodes.OK);
+        console.log(res.body);
         expect(res.body).to.be.an("object");
         expect(res.body).to.have.property("game");
         expect(res.body.game).to.be.an("object");
@@ -83,7 +83,6 @@ describe("Game tests", async() => {
         expect(res.body.game).to.be.an("object");
         expect(res.body.game).to.have.property("id");
         expect(res.body.game).to.have.property("user_id");
-        expect(res.body.game).to.have.property("score");
         expect(res.body.game).to.have.property("current_progress");
         expect(res.body.game).to.have.property("is_finished");
         const decodedToken = jwt.decode(res.body.token);

@@ -25,10 +25,6 @@ module.exports = (sequelize, DataTypes) => {
     }
     Games.init({
         user_id: DataTypes.INTEGER,
-        score: {
-            type: DataTypes.INTEGER,
-            defaultValue: 0,
-        },
         current_progress: {
             type: DataTypes.INTEGER,
             defaultValue: 0,

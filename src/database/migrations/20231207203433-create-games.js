@@ -17,9 +17,6 @@ module.exports = {
                 },
                 onDelete: "CASCADE",
             },
-            score: {
-                type: Sequelize.INTEGER
-            },
             current_progress: {
                 type: Sequelize.INTEGER
             },

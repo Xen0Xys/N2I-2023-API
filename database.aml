@@ -6,7 +6,6 @@ users
 games
   id int pk
   user_id fk users.id
-  score int | The current score of the game
   current_progress int | The game number the user is on
   is_finished boolean | Whether the game is finished or not
 
