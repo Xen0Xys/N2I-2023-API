@@ -14,6 +14,7 @@ module.exports = {
                     model: "games",
                     key: "id"
                 },
+                onDelete: "CASCADE",
             },
             info_data_id: {
                 type: Sequelize.INTEGER,
@@ -21,6 +22,7 @@ module.exports = {
                     model: "info_data",
                     key: "id"
                 },
+                onDelete: "CASCADE",
             },
             created_at: {
                 allowNull: false,

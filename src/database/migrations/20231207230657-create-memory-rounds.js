@@ -14,6 +14,7 @@ module.exports = {
                     model: "games",
                     key: "id"
                 },
+                onDelete: "CASCADE",
             },
             memory_data: {
                 type: Sequelize.STRING

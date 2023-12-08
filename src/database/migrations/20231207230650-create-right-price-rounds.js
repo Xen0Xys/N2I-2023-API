@@ -14,13 +14,15 @@ module.exports = {
                     model: "games",
                     key: "id",
                 },
+                onDelete: "CASCADE",
             },
             right_price_data_id: {
                 type: Sequelize.INTEGER,
                 references: {
                     model: "right_price_data",
                     key: "id",
-                }
+                },
+                onDelete: "CASCADE",
             },
             current_score: {
                 type: Sequelize.INTEGER,

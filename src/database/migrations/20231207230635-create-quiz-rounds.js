@@ -15,6 +15,7 @@ module.exports = {
                     model: "games",
                     key: "id"
                 },
+                onDelete: "CASCADE",
             },
             quiz_data_id: {
                 type: Sequelize.INTEGER,
@@ -23,6 +24,7 @@ module.exports = {
                     model: "quiz_data",
                     key: "id"
                 },
+                onDelete: "CASCADE",
             },
             current_score: {
                 type: Sequelize.INTEGER,
