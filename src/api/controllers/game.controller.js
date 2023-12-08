@@ -52,6 +52,7 @@ async function computeGameScore(gameId){
 
 async function getGameRecap(req, res){
     try{
+        // Recap is an array of objects {gameType, score} in order of created_at
         const gameId = req.user.game_id;
         const game = await Game.findByPk(gameId);
         if(!game) return res.status(StatusCodes.NOT_FOUND).json({message: "Game not found"});

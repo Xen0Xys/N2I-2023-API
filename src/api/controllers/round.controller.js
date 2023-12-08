@@ -4,8 +4,10 @@ const {StatusCodes} = require("http-status-codes");
 async function generateNextRound(req, res){
     try{
         const round = await roundService.getNextRound(req.user.game_id);
-        if(!round)
-            return res.status(StatusCodes.NOT_FOUND).json({message: "Game is finished"});
+        if(round.error)
+            return res.status(StatusCodes.BAD_REQUEST).json(round.error);
+        if(round.end)
+            return res.status(StatusCodes.RESET_CONTENT).json();
         return res.status(StatusCodes.OK).json(round);
     } catch (e){
         console.log(e);

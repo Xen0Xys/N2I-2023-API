@@ -13,14 +13,14 @@ async function getNextRound(gameId){
     if(game.current_progress >= 10){
         game.is_finished = true;
         await game.save();
-        return null;
+        return {end: "Game is finished"};
     }
     game.current_progress += 1;
     await game.save();
     // Get round type
     const roundType = await getNextRoundType(gameId);
     if(!roundType)
-        return null;
+        return {error: "Error getting round type"};
     // Generate next round
     switch (roundType){
     case "quiz":
