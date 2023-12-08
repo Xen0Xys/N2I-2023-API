@@ -54,6 +54,7 @@ async function getGameRecap(req, res){
     try{
         // Recap is an array of objects {gameType, score} in order of created_at
         const gameId = req.user.game_id;
+        if(!gameId) return res.status(StatusCodes.BAD_REQUEST).json({message: "Missing game id"});
         const game = await Game.findByPk(gameId);
         if(!game) return res.status(StatusCodes.NOT_FOUND).json({message: "Game not found"});
         if(!game.is_finished) return res.status(StatusCodes.BAD_REQUEST).json({message: "Game is not finished"});
@@ -78,4 +79,5 @@ module.exports = {
     startGame,
     getGame,
     getGameRecap,
+    computeGameScore,
 };
