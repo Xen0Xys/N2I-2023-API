@@ -10,7 +10,7 @@ const maxRightPriceScore = 3;
 async function getNextRound(gameId){
     const game = await Game.findOne({where: {id: gameId}});
     // Increment current_progress
-    if(game.current_progress >= 10){
+    if(game.current_progress >= 1){
         game.is_finished = true;
         await game.save();
         return {end: "Game is finished"};
