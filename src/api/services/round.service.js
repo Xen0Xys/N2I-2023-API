@@ -12,18 +12,7 @@ async function getCurrentRound(gameId){
     const gameType = typeSuite[game.current_progress - 1];
     if(!gameType)
         return null;
-    let roundModel;
-    switch (gameType){
-    case "quiz":
-        roundModel = QuizRounds;
-        break;
-    case "info":
-        roundModel = InfoRounds;
-        break;
-    case "memory":
-        roundModel = MemoryRounds;
-        break;
-    }
+    const roundModel = await getModel(gameType);
     const round = await roundModel.findOne({where: {game_id: gameId}, order: [["id", "DESC"]]});
     const base = {
         round_id: round.id,
@@ -31,15 +20,7 @@ async function getCurrentRound(gameId){
     };
     switch (gameType){
     case "quiz":
-        const quizData = await QuizData.findOne({where: {id: round.quiz_data_id}});
-        const answers = [quizData.right_answer, quizData.wrong_answer_1, quizData.wrong_answer_2, quizData.wrong_answer_3];
-        shuffleList(answers);
-        return {
-            ...base,
-            image: quizData.image,
-            question: quizData.question,
-            answers
-        };
+        return await getCurrentQuizRound(base, round);
     case "info":
         const infoData = await InfoData.findOne({where: {id: round.info_data_id}});
         return {
@@ -60,6 +41,28 @@ async function getCurrentRound(gameId){
             order_of_magnitude: rightPriceData.order_of_magnitude,
         };
     }
+}
+
+async function getCurrentQuizRound(base, round){
+    const quizData = await QuizData.findOne({where: {id: round.quiz_data_id}});
+    if(!round.is_finished){
+        const answers = [quizData.right_answer, quizData.wrong_answer_1, quizData.wrong_answer_2, quizData.wrong_answer_3];
+        shuffleList(answers);
+        return {
+            ...base,
+            image: quizData.image,
+            question: quizData.question,
+            current_score: round.current_score,
+            answers
+        };
+    }
+    return {
+        ...base,
+        image: quizData.image,
+        question: quizData.question,
+        answers: round.answers,
+        is_finished: true,
+    };
 }
 
 async function getNextRound(gameId){
@@ -84,6 +87,44 @@ async function getNextRound(gameId){
     case "right_price":
         return generateRightPriceRound(gameId);
     }
+}
+
+async function getModel(gameType){
+    switch (gameType){
+    case "quiz":
+        return QuizRounds;
+    case "info":
+        return InfoRounds;
+    case "memory":
+        return MemoryRounds;
+    case "right_price":
+        return RightPriceRounds;
+    }
+}
+
+async function takeAnswer(gameId, roundId, answer){
+    // TODO: WIP
+    const game = await Game.findOne({where: {id: gameId}});
+    if(!game)
+        return null;
+    const gameType = typeSuite[game.current_progress - 1];
+    if(!gameType)
+        return null;
+    const roundModel = await getModel(gameType);
+    const round = await roundModel.findOne({where: {game_id: gameId}, order: [["id", "DESC"]]});
+    switch (gameType){
+    case "quiz":
+        return await takeQuizAnswer(round, answer);
+    default:
+        return null;
+    }
+}
+
+async function takeQuizAnswer(round, answer){
+    const quizData = await QuizData.findOne({where: {id: round.quiz_data_id}});
+    return {
+        is_correct: answer === quizData.right_answer,
+    };
 }
 
 async function getNextRoundType(gameId){
@@ -129,7 +170,7 @@ async function generateInfoRound(gameId){
 }
 
 async function generateMemoryRound(gameId){
-
+    // TODO
 }
 
 async function generateRightPriceRound(gameId){
@@ -156,4 +197,5 @@ function shuffleList(list){
 module.exports = {
     getNextRound,
     getCurrentRound,
+    takeAnswer,
 };
