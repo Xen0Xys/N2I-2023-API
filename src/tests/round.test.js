@@ -22,7 +22,7 @@ describe("Round tests", async() => {
     });
     it("Get current round with no existing round", async() => {
         const res = await chai.request(api).get("/api/v1/round/current").set("Authorization", "Bearer " + user.token);
-        expect(res).to.have.status(StatusCodes.NOT_FOUND);
+        expect(res).to.have.status(StatusCodes.BAD_REQUEST);
     });
     it("Ask for next quiz round", async() => {
         const res = await chai.request(api).post("/api/v1/round/next").set("Authorization", "Bearer " + user.token);
