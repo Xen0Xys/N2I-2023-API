@@ -4,7 +4,7 @@ module.exports = {
         await queryInterface.bulkInsert("quiz_data", [
             {
                 id: 1,
-                image: "https://unsplash.com/photos/person-writing-on-white-paper-qDgTQOYk6B8",
+                image: "https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                 question: "What is the capital of France?",
                 right_answer: "Paris",
                 wrong_answer_1: "Marseille",
@@ -25,7 +25,7 @@ module.exports = {
             },
             {
                 id: 3,
-                image: "https://unsplash.com/photos/person-writing-on-white-paper-qDgTQOYk6B8",
+                image: "https://plus.unsplash.com/premium_photo-1681248156511-200ffb3b66cc?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                 question: "What is the capital of Germany?",
                 right_answer: "Berlin",
                 wrong_answer_1: "Hamburg",
