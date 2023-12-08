@@ -7,6 +7,28 @@ const typeSuite = ["quiz", "right_price", "info", "right_price", "info", "quiz",
 const maxQuizScore = 3;
 const maxRightPriceScore = 3;
 
+async function getNextRound(gameId){
+    const game = await Game.findOne({where: {id: gameId}});
+    // Increment current_progress
+    if(game.current_progress >= 10)
+        return null;
+    game.current_progress += 1;
+    await game.save();
+    // Get round type
+    const roundType = await getNextRoundType(gameId);
+    if(!roundType)
+        return null;
+    // Generate next round
+    switch (roundType){
+    case "quiz":
+        return generateQuizRound(gameId);
+    case "info":
+        return generateInfoRound(gameId);
+    case "right_price":
+        return generateRightPriceRound(gameId);
+    }
+}
+
 async function getCurrentRound(gameId){
     const game = await Game.findOne({where: {id: gameId}});
     if(!game)
@@ -24,22 +46,9 @@ async function getCurrentRound(gameId){
     case "quiz":
         return await getCurrentQuizRound(base, round);
     case "info":
-        const infoData = await InfoData.findOne({where: {id: round.info_data_id}});
-        return {
-            ...base,
-            type: infoData.type,
-            url: infoData.url,
-            title: infoData.title,
-            content: infoData.content
-        };
+        return await getCurrentInfoRound(base, round);
     case "right_price":
-        const rightPriceData = await RightPriceData.findOne({where: {id: round.right_price_data_id}});
-        return {
-            ...base,
-            image: rightPriceData.image,
-            question: rightPriceData.question,
-            order_of_magnitude: rightPriceData.order_of_magnitude,
-        };
+        return await getCurrentRightPriceRound(base, round);
     }
 }
 
@@ -64,38 +73,35 @@ async function getCurrentQuizRound(base, round){
         is_finished: true,
     };
 }
-
-async function getNextRound(gameId){
-    const game = await Game.findOne({where: {id: gameId}});
-    // Increment current_progress
-    if(game.current_progress >= 10)
-        return null;
-    game.current_progress += 1;
-    await game.save();
-    // Get round type
-    const roundType = await getNextRoundType(gameId);
-    if(!roundType)
-        return null;
-    // Generate next round
-    switch (roundType){
-    case "quiz":
-        return generateQuizRound(gameId);
-    case "info":
-        return generateInfoRound(gameId);
-    case "right_price":
-        return generateRightPriceRound(gameId);
+async function getCurrentRightPriceRound(base, round){
+    const rightPriceData = await RightPriceData.findOne({where: {id: round.right_price_data_id}});
+    if(!round.is_finished){
+        return {
+            ...base,
+            image: rightPriceData.image,
+            question: rightPriceData.question,
+            order_of_magnitude: rightPriceData.order_of_magnitude,
+            current_score: round.current_score,
+        };
     }
+    return {
+        ...base,
+        image: rightPriceData.image,
+        question: rightPriceData.question,
+        order_of_magnitude: rightPriceData.order_of_magnitude,
+        answer: rightPriceData.answer,
+        is_finished: true,
+    };
 }
-
-async function getModel(gameType){
-    switch (gameType){
-    case "quiz":
-        return QuizRounds;
-    case "info":
-        return InfoRounds;
-    case "right_price":
-        return RightPriceRounds;
-    }
+async function getCurrentInfoRound(base, round){
+    const infoData = await InfoData.findOne({where: {id: round.info_data_id}});
+    return {
+        ...base,
+        type: infoData.type,
+        url: infoData.url,
+        title: infoData.title,
+        content: infoData.content
+    };
 }
 
 async function takeAnswer(gameId, roundId, answer){
@@ -116,7 +122,6 @@ async function takeAnswer(gameId, roundId, answer){
         return null;
     }
 }
-
 async function takeQuizAnswer(round, answer){
     const quizData = await QuizData.findOne({where: {id: round.quiz_data_id}});
     if(answer === quizData.right_answer){
@@ -142,7 +147,6 @@ async function takeQuizAnswer(round, answer){
         };
     }
 }
-
 async function takeRightPriceAnswer(round, answer){
     const rightPriceData = await RightPriceData.findOne({where: {id: round.right_price_data_id}});
     if(answer === rightPriceData.answer){
@@ -170,11 +174,6 @@ async function takeRightPriceAnswer(round, answer){
     }
 }
 
-async function getNextRoundType(gameId){
-    const game = await Game.findOne({where: {id: gameId}});
-    return typeSuite[game.current_progress - 1];
-}
-
 async function generateQuizRound(gameId){
     const quizData = await QuizData.findAll();
     const randomIndex = Math.floor(Math.random() * quizData.length);
@@ -193,7 +192,6 @@ async function generateQuizRound(gameId){
         answers: answers
     };
 }
-
 async function generateInfoRound(gameId){
     const infoData = await InfoData.findAll();
     const randomIndex = Math.floor(Math.random() * infoData.length);
@@ -211,7 +209,6 @@ async function generateInfoRound(gameId){
         content: currentInfoData.content
     };
 }
-
 async function generateRightPriceRound(gameId){
     const rightPriceData = await RightPriceData.findAll();
     const randomIndex = Math.floor(Math.random() * rightPriceData.length);
@@ -227,6 +224,22 @@ async function generateRightPriceRound(gameId){
         question: currentRightPriceData.question,
         order_of_magnitude: currentRightPriceData.order_of_magnitude,
     };
+}
+
+async function getModel(gameType){
+    switch (gameType){
+    case "quiz":
+        return QuizRounds;
+    case "info":
+        return InfoRounds;
+    case "right_price":
+        return RightPriceRounds;
+    }
+}
+
+async function getNextRoundType(gameId){
+    const game = await Game.findOne({where: {id: gameId}});
+    return typeSuite[game.current_progress - 1];
 }
 
 function shuffleList(list){
