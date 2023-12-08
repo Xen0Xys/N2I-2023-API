@@ -3,7 +3,7 @@ const {Game, QuizData, QuizRounds, InfoData, InfoRounds, RightPriceData, RightPr
 const {StatusCodes} = require("http-status-codes");
 
 // const typeSuite = ["quiz", "right_price", "info", "right_price", "memory", "info", "quiz", "quiz", "right_price", "info"];
-const typeSuite = ["quiz", "right_price", "info", "right_price", "memory", "info", "quiz", "quiz", "right_price", "info"];
+const typeSuite = ["quiz", "right_price", "info", "right_price", "info", "quiz", "right_price", "quiz", "right_price", "info"];
 const maxQuizScore = 3;
 const maxRightPriceScore = 3;
 
@@ -32,8 +32,6 @@ async function getCurrentRound(gameId){
             title: infoData.title,
             content: infoData.content
         };
-    case "memory":
-        return null;
     case "right_price":
         const rightPriceData = await RightPriceData.findOne({where: {id: round.right_price_data_id}});
         return {
@@ -84,8 +82,6 @@ async function getNextRound(gameId){
         return generateQuizRound(gameId);
     case "info":
         return generateInfoRound(gameId);
-    case "memory":
-        return generateMemoryRound(gameId);
     case "right_price":
         return generateRightPriceRound(gameId);
     }
@@ -97,8 +93,6 @@ async function getModel(gameType){
         return QuizRounds;
     case "info":
         return InfoRounds;
-    case "memory":
-        return MemoryRounds;
     case "right_price":
         return RightPriceRounds;
     }
@@ -150,7 +144,30 @@ async function takeQuizAnswer(round, answer){
 }
 
 async function takeRightPriceAnswer(round, answer){
-    // TODO
+    const rightPriceData = await RightPriceData.findOne({where: {id: round.right_price_data_id}});
+    if(answer === rightPriceData.answer){
+        round.is_finished = true;
+        await round.save();
+        return {
+            is_correct: true,
+        };
+    }else{
+        if (round.current_score < maxRightPriceScore){
+            round.current_score += 1;
+            await round.save();
+            return {
+                is_correct: false,
+                is_lower: answer < rightPriceData.answer,
+                remaining_tries: maxRightPriceScore - round.current_score,
+            };
+        }
+        round.is_finished = true;
+        await round.save();
+        return {
+            is_correct: false,
+            remaining_tries: 0,
+        };
+    }
 }
 
 async function getNextRoundType(gameId){
@@ -193,10 +210,6 @@ async function generateInfoRound(gameId){
         title: currentInfoData.title,
         content: currentInfoData.content
     };
-}
-
-async function generateMemoryRound(gameId){
-    // TODO
 }
 
 async function generateRightPriceRound(gameId){

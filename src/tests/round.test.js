@@ -50,7 +50,7 @@ describe("Round tests", async() => {
         expect(res.body.round_type).to.be.equal("quiz");
         expect(res.body.round_id).to.be.equal(round.round_id);
     });
-    it("Try answers", async() => {
+    it("Try answers for quiz", async() => {
         for(let i = 0; i < 4; i++){
             const currentAnswer = round.answers[i];
             const res = await chai.request(api).post("/api/v1/round/answer/quiz/" + round.round_id).set("Authorization", "Bearer " + user.token).send({answer: currentAnswer});
@@ -100,6 +100,26 @@ describe("Round tests", async() => {
         expect(res.body).to.have.property("question");
         expect(res.body).to.have.property("order_of_magnitude");
         expect(res.body.round_type).to.be.equal("right_price");
+    });
+    it("Try answers for right price", async() => {
+        const res = await chai.request(api).post("/api/v1/round/answer/right_price/" + round.round_id).set("Authorization", "Bearer " + user.token).send({answer: 0});
+        expect(res).to.have.status(StatusCodes.OK);
+        expect(res.body).to.be.an("object");
+        expect(res.body).to.have.property("is_correct");
+        expect(res.body.is_correct).to.be.equal(false);
+        expect(res.body).to.have.property("is_lower");
+        expect(res.body.is_lower).to.be.equal(true);
+        expect(res.body).to.have.property("remaining_tries");
+        expect(res.body.remaining_tries).to.be.equal(2);
+        const res2 = await chai.request(api).post("/api/v1/round/answer/right_price/" + round.round_id).set("Authorization", "Bearer " + user.token).send({answer: 999_999_999_999});
+        expect(res2).to.have.status(StatusCodes.OK);
+        expect(res2.body).to.be.an("object");
+        expect(res2.body).to.have.property("is_correct");
+        expect(res2.body.is_correct).to.be.equal(false);
+        expect(res2.body).to.have.property("is_lower");
+        expect(res2.body.is_lower).to.be.equal(false);
+        expect(res2.body).to.have.property("remaining_tries");
+        expect(res2.body.remaining_tries).to.be.equal(1);
     });
     it("Get current round", async() => {
         const res = await chai.request(api).get("/api/v1/round/current").set("Authorization", "Bearer " + user.token);
