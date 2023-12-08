@@ -11,7 +11,7 @@ async function getLeaderboard(req, res){
         for(const userGame of userGames)
             userScores.push(await computeGameScore(userGame.id));
         if(userScores.length > 0)
-            userLowerScores.push({user: user, score: Math.min(...userScores)});
+            userLowerScores.push({username: user.username, score: Math.min(...userScores)});
     }
     userLowerScores.sort((a, b) => b.score - a.score);
     return res.status(200).json({leaderboard: userLowerScores});
