@@ -30,6 +30,8 @@ module.exports = async(req, res, next) => {
                 jsonUser.game_id = activeGame.id;
             else
                 return res.status(StatusCodes.CONFLICT).json({message: "Database active game id is different from token game id"});
+        }else{
+            jsonUser.game_id = decodedToken.game_id;
         }
         req.user = jsonUser;
         next();
