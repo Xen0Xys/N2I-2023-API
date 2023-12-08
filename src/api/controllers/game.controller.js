@@ -12,7 +12,9 @@ async function startGame(req, res){
         // Create new game
         const game = await Game.create({user_id: userId});
         const token = generateJWT({id: userId, game_id: game.id}, process.env.TOKEN_DURATION, process.env.JWT_KEY, true);
-        const result = {game: game.toJSON(), token: token};
+        const jsonGame = game.toJSON();
+        jsonGame.score = await computeGameScore(game.id);
+        const result = {game: jsonGame, token: token};
         return res.status(StatusCodes.OK).json(result);
     }catch (e){
         console.log(e);
@@ -27,6 +29,7 @@ async function getGame(req, res){
         if(!game) return res.status(StatusCodes.NOT_FOUND).json({message: "Game not found"});
         const jsonGame = game.toJSON();
         jsonGame.score = await computeGameScore(gameId);
+        console.log(jsonGame);
         return res.status(StatusCodes.OK).json({game: jsonGame});
     }catch (e){
         console.log(e);
