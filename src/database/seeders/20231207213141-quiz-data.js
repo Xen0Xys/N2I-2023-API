@@ -12,8 +12,8 @@ module.exports = {
                 wrong_answer_3: "Mon jet privé",
                 created_at: new Date(),
                 updated_at: new Date()
-              },
-              {
+            },
+            {
                 id: 2,
                 image: "",
                 question: "Pour réduire ma consommation électrique, je peux :",
@@ -23,8 +23,8 @@ module.exports = {
                 wrong_answer_3: "Rester les fenêtres ouvertes l'hiver",
                 created_at: new Date(),
                 updated_at: new Date()
-              },
-              {
+            },
+            {
                 id: 3,
                 image: "",
                 question: "Si je veux chauffer, je dois privilégier :",
@@ -34,8 +34,8 @@ module.exports = {
                 wrong_answer_3: "Le gaz",
                 created_at: new Date(),
                 updated_at: new Date()
-              },
-              {
+            },
+            {
                 id: 4,
                 image: "",
                 question: "En collectivité, je peux :",
@@ -45,7 +45,7 @@ module.exports = {
                 wrong_answer_3: "Jouer de la flute pour mes chiens, à l'arrêt, le moteur allumé",
                 created_at: new Date(),
                 updated_at: new Date()
-              }
+            }
         ]);
     },
 
