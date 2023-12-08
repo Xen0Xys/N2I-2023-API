@@ -8,7 +8,7 @@ async function getLeaderboard(req, res){
     console.log("=== Computing leaderboard ===");
     for(const user of users){
         console.log("Computing for user " + user.username);
-        const userGames = await Game.findAll();
+        const userGames = await Game.findAll({where: {user_id: user.id}});
         const userScores = [];
         for(const userGame of userGames){
             console.log("Computing for game " + userGame.id);
