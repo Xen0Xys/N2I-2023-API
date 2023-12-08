@@ -6,7 +6,7 @@ async function startGame(req, res){
     try{
         const userId = req.user.id;
         // Check for active game
-        const activeGame = await Game.findOne({where: {is_finished: false, user_id: userId}});
+        // const activeGame = await Game.findOne({where: {is_finished: false, user_id: userId}});
         // if(activeGame)
         //     await activeGame.destroy();
         // Create new game
