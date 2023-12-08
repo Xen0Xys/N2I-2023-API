@@ -68,7 +68,7 @@ async function getGameRecap(req, res){
             if(rightPriceRound.is_finished)
                 recap.push({gameType: "RightPrice", score: rightPriceRound.current_score, createdAt: rightPriceRound.created_at});
         recap.sort((a, b) => a.createdAt - b.createdAt);
-        return res.status(StatusCodes.OK).json({recap: recap, score: computeGameScore(gameId)});
+        return res.status(StatusCodes.OK).json({recap: recap, score: await computeGameScore(gameId)});
     }catch (e){
         console.log(e);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: ReasonPhrases.INTERNAL_SERVER_ERROR});
