@@ -64,13 +64,7 @@ async function generateRightPriceRound(gameId){
 }
 
 function shuffleList(list){
-    const newList = [];
-    while(list.length > 0){
-        const randomIndex = Math.floor(Math.random() * list.length);
-        newList.push(list[randomIndex]);
-        list.splice(randomIndex, 1);
-    }
-    return newList;
+    list.sort((a, b) => 0.5 - Math.random());
 }
 
 module.exports = {
