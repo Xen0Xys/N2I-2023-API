@@ -3,7 +3,10 @@ const {Model} = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
     class QuizData extends Model{
         static associate(models){
-
+            QuizData.hasMany(models.QuizRounds, {
+                foreignKey: "quiz_data_id",
+                as: "quiz_rounds",
+            });
         }
     }
     QuizData.init({

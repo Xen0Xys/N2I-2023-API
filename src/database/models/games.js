@@ -5,6 +5,22 @@ module.exports = (sequelize, DataTypes) => {
             Games.belongsTo(models.User, {
                 foreignKey: "user_id",
             });
+            Games.hasMany(models.QuizRounds, {
+                foreignKey: "game_id",
+                as: "quiz_rounds",
+            });
+            Games.hasMany(models.InfoRounds, {
+                foreignKey: "game_id",
+                as: "info_rounds",
+            });
+            Games.hasMany(models.MemoryRounds, {
+                foreignKey: "game_id",
+                as: "memory_rounds",
+            });
+            Games.hasMany(models.RightPriceRounds, {
+                foreignKey: "game_id",
+                as: "right_price_rounds",
+            });
         }
     }
     Games.init({

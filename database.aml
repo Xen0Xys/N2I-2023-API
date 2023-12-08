@@ -42,18 +42,21 @@ quiz_rounds
   game_id fk games.id
   quiz_data_id fk quiz_data.id
   current_score int
+  is_finished boolean | Whether the info round is finished or not
 
 right_price_rounds
   id int pk
   game_id fk games.id
   right_price_data_id fk right_price_data.id
   current_score int
+  is_finished boolean | Whether the info round is finished or not
 
 memory_rounds
   id int pk
   game_id fk games.id
   memory_data varchar | The memory set as a formatted string
   current_score int
+  is_finished boolean | Whether the info round is finished or not
 
 info_rounds
   id int pk

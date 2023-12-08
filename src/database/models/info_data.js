@@ -3,7 +3,9 @@ const {Model} = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
     class InfoData extends Model{
         static associate(models){
-
+            InfoData.hasMany(models.InfoRounds, {
+                foreignKey: "info_data_id",
+            });
         }
     }
     InfoData.init({
