@@ -1,8 +1,64 @@
-/* eslint-disable no-unused-vars */
-const {Game, QuizData, QuizRounds, InfoData, InfoRounds, RightPriceData, RightPriceRounds} = require("@database/database");
+/* eslint-disable no-unused-vars,no-case-declarations */
+const {Game, QuizData, QuizRounds, InfoData, InfoRounds, RightPriceData, RightPriceRounds, MemoryData, MemoryRounds} = require("@database/database");
+const {StatusCodes} = require("http-status-codes");
 
 // const typeSuite = ["quiz", "right_price", "info", "right_price", "memory", "info", "quiz", "quiz", "right_price", "info"];
 const typeSuite = ["quiz", "info", "right_price", "right_price", "memory", "info", "quiz", "quiz", "right_price", "info"];
+
+async function getCurrentRound(gameId){
+    const game = await Game.findOne({where: {id: gameId}});
+    if(!game)
+        return null;
+    const gameType = typeSuite[game.current_progress - 1];
+    let roundModel;
+    switch (gameType){
+    case "quiz":
+        roundModel = QuizRounds;
+        break;
+    case "info":
+        roundModel = InfoRounds;
+        break;
+    case "memory":
+        roundModel = MemoryRounds;
+        break;
+    }
+    const round = await roundModel.findOne({where: {game_id: gameId}, order: [["id", "DESC"]]});
+    const base = {
+        round_id: round.id,
+        round_type: gameType,
+    };
+    switch (gameType){
+    case "quiz":
+        const quizData = await QuizData.findOne({where: {id: round.quiz_data_id}});
+        const answers = [quizData.right_answer, quizData.wrong_answer_1, quizData.wrong_answer_2, quizData.wrong_answer_3];
+        shuffleList(answers);
+        return {
+            ...base,
+            image: quizData.image,
+            question: quizData.question,
+            answers
+        };
+    case "info":
+        const infoData = await InfoData.findOne({where: {id: round.info_data_id}});
+        return {
+            ...base,
+            type: infoData.type,
+            url: infoData.url,
+            title: infoData.title,
+            content: infoData.content
+        };
+    case "memory":
+        return null;
+    case "right_price":
+        const rightPriceData = await RightPriceData.findOne({where: {id: round.right_price_data_id}});
+        return {
+            ...base,
+            image: rightPriceData.image,
+            question: rightPriceData.question,
+            order_of_magnitude: rightPriceData.order_of_magnitude,
+        };
+    }
+}
 
 async function getNextRound(gameId){
     const game = await Game.findOne({where: {id: gameId}});
@@ -96,5 +152,6 @@ function shuffleList(list){
 }
 
 module.exports = {
-    getNextRound
+    getNextRound,
+    getCurrentRound,
 };

@@ -15,6 +15,7 @@ module.exports = async(req, res, next) => {
         }catch(e){
             return res.status(StatusCodes.UNAUTHORIZED).json({message: "Invalid token", error: e});
         }
+        console.log(decodedToken);
         if(!decodedToken) return res.status(StatusCodes.UNAUTHORIZED).json({message: "Invalid token"});
         if(!decodedToken.game_id) return res.status(StatusCodes.UNAUTHORIZED).json({message: "Missing game id in token"});
         const user = await User.findOne({where: {id: decodedToken.id}});

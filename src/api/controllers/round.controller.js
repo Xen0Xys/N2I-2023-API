@@ -13,6 +13,19 @@ async function generateNextRound(req, res){
     }
 }
 
+async function getCurrentRound(req, res){
+    try{
+        const currentRound = await roundService.getCurrentRound(req.user.game_id);
+        if(!currentRound)
+            return res.status(StatusCodes.NOT_FOUND).json({message: "Game is finished"});
+        return res.status(StatusCodes.OK).json(currentRound);
+    }catch (e){
+        console.log(e);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: "Internal server error"});
+    }
+}
+
 module.exports = {
     generateNextRound,
+    getCurrentRound,
 };
