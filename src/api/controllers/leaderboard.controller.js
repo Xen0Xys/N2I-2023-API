@@ -18,7 +18,7 @@ async function getLeaderboard(req, res){
             userLowerScores.push({username: user.username, score: Math.min(...userScores)});
     }
     console.log(userLowerScores);
-    userLowerScores.sort((a, b) => b.score - a.score);
+    userLowerScores.sort((a, b) => a.score - b.score);
     console.log("=== End of leaderboard computation ===");
     return res.status(200).json({leaderboard: userLowerScores});
 }
