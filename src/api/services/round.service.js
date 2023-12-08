@@ -10,6 +10,8 @@ async function getCurrentRound(gameId){
     if(!game)
         return null;
     const gameType = typeSuite[game.current_progress - 1];
+    if(!gameType)
+        return null;
     let roundModel;
     switch (gameType){
     case "quiz":
