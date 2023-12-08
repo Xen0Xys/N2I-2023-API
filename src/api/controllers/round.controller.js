@@ -1,10 +1,16 @@
 const roundService = require("@services/round.service");
+const {StatusCodes} = require("http-status-codes");
 
 async function generateNextRound(req, res){
-    const round = await roundService.getNextRound(req.game.id);
-    if(!round)
-        return res.status(400).json({message: "Game is finished"});
-    return res.status(200).json(round);
+    try{
+        const round = await roundService.getNextRound(req.user.game_id);
+        if(!round)
+            return res.status(StatusCodes.NOT_FOUND).json({message: "Game is finished"});
+        return res.status(StatusCodes.OK).json(round);
+    } catch (e){
+        console.log(e);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: "Internal server error"});
+    }
 }
 
 module.exports = {

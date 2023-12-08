@@ -11,7 +11,7 @@ async function getNextRound(gameId){
     game.current_progress += 1;
     await game.save();
     // Get round type
-    const roundType = getNextRoundType(gameId);
+    const roundType = await getNextRoundType(gameId);
     if(!roundType)
         return null;
     // Generate next round
