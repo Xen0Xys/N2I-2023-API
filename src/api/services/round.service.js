@@ -3,7 +3,9 @@ const {Game, QuizData, QuizRounds, InfoData, InfoRounds, RightPriceData, RightPr
 const {StatusCodes} = require("http-status-codes");
 
 // const typeSuite = ["quiz", "right_price", "info", "right_price", "memory", "info", "quiz", "quiz", "right_price", "info"];
-const typeSuite = ["quiz", "info", "right_price", "right_price", "memory", "info", "quiz", "quiz", "right_price", "info"];
+const typeSuite = ["quiz", "right_price", "info", "right_price", "memory", "info", "quiz", "quiz", "right_price", "info"];
+const maxQuizScore = 3;
+const maxRightPriceScore = 3;
 
 async function getCurrentRound(gameId){
     const game = await Game.findOne({where: {id: gameId}});
@@ -45,22 +47,22 @@ async function getCurrentRound(gameId){
 
 async function getCurrentQuizRound(base, round){
     const quizData = await QuizData.findOne({where: {id: round.quiz_data_id}});
+    const answers = [quizData.right_answer, quizData.wrong_answer_1, quizData.wrong_answer_2, quizData.wrong_answer_3];
     if(!round.is_finished){
-        const answers = [quizData.right_answer, quizData.wrong_answer_1, quizData.wrong_answer_2, quizData.wrong_answer_3];
         shuffleList(answers);
         return {
             ...base,
             image: quizData.image,
             question: quizData.question,
             current_score: round.current_score,
-            answers
+            answers: answers
         };
     }
     return {
         ...base,
         image: quizData.image,
         question: quizData.question,
-        answers: round.answers,
+        answers: answers,
         is_finished: true,
     };
 }
@@ -103,7 +105,6 @@ async function getModel(gameType){
 }
 
 async function takeAnswer(gameId, roundId, answer){
-    // TODO: WIP
     const game = await Game.findOne({where: {id: gameId}});
     if(!game)
         return null;
@@ -115,6 +116,8 @@ async function takeAnswer(gameId, roundId, answer){
     switch (gameType){
     case "quiz":
         return await takeQuizAnswer(round, answer);
+    case "right_price":
+        return await takeRightPriceAnswer(round, answer);
     default:
         return null;
     }
@@ -122,9 +125,32 @@ async function takeAnswer(gameId, roundId, answer){
 
 async function takeQuizAnswer(round, answer){
     const quizData = await QuizData.findOne({where: {id: round.quiz_data_id}});
-    return {
-        is_correct: answer === quizData.right_answer,
-    };
+    if(answer === quizData.right_answer){
+        round.is_finished = true;
+        await round.save();
+        return {
+            is_correct: true,
+        };
+    }else{
+        if(round.current_score < maxQuizScore){
+            round.current_score += 1;
+            await round.save();
+            return {
+                is_correct: false,
+                remaining_tries: maxQuizScore - round.current_score,
+            };
+        }
+        round.is_finished = true;
+        await round.save();
+        return {
+            is_correct: false,
+            remaining_tries: 0,
+        };
+    }
+}
+
+async function takeRightPriceAnswer(round, answer){
+    // TODO
 }
 
 async function getNextRoundType(gameId){
