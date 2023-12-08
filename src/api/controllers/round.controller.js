@@ -16,8 +16,8 @@ async function generateNextRound(req, res){
 async function getCurrentRound(req, res){
     try{
         const currentRound = await roundService.getCurrentRound(req.user.game_id);
-        if(!currentRound)
-            return res.status(StatusCodes.NOT_FOUND).json({message: "Game is finished"});
+        if(currentRound.error)
+            return res.status(StatusCodes.BAD_REQUEST).json({message: currentRound.error});
         return res.status(StatusCodes.OK).json(currentRound);
     }catch (e){
         console.log(e);

@@ -32,10 +32,10 @@ async function getNextRound(gameId){
 async function getCurrentRound(gameId){
     const game = await Game.findOne({where: {id: gameId}});
     if(!game)
-        return null;
+        return {error: "Game not found"};
     const gameType = typeSuite[game.current_progress - 1];
     if(!gameType)
-        return null;
+        return {error: "Error getting round type"};
     const roundModel = await getModel(gameType);
     const round = await roundModel.findOne({where: {game_id: gameId}, order: [["id", "DESC"]]});
     const base = {
