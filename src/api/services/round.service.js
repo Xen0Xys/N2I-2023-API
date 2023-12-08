@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 const {Game, QuizData, QuizRounds, InfoData, InfoRounds, RightPriceData, RightPriceRounds} = require("@database/database");
 
-const typeSuite = ["quiz", "right_price", "info", "right_price", "memory", "info", "quiz", "quiz", "right_price", "info"];
+// const typeSuite = ["quiz", "right_price", "info", "right_price", "memory", "info", "quiz", "quiz", "right_price", "info"];
+const typeSuite = ["quiz", "info", "right_price", "right_price", "memory", "info", "quiz", "quiz", "right_price", "info"];
 
 async function getNextRound(gameId){
     const game = await Game.findOne({where: {id: gameId}});
