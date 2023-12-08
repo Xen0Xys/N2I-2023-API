@@ -13,10 +13,6 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "game_id",
                 as: "info_rounds",
             });
-            Games.hasMany(models.MemoryRounds, {
-                foreignKey: "game_id",
-                as: "memory_rounds",
-            });
             Games.hasMany(models.RightPriceRounds, {
                 foreignKey: "game_id",
                 as: "right_price_rounds",
