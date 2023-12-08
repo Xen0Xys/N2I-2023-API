@@ -7,8 +7,8 @@ async function startGame(req, res){
         const userId = req.user.id;
         // Check for active game
         const activeGame = await Game.findOne({where: {is_finished: false, user_id: userId}});
-        if(activeGame)
-            await activeGame.destroy();
+        // if(activeGame)
+        //     await activeGame.destroy();
         // Create new game
         const game = await Game.create({user_id: userId});
         const token = generateJWT({id: userId, game_id: game.id}, process.env.TOKEN_DURATION, process.env.JWT_KEY, true);
@@ -42,11 +42,9 @@ async function computeGameScore(gameId){
     const rightPriceRounds = await RightPriceRounds.findAll({where: {game_id: gameId}});
     let score = 0;
     for(const quizRound of quizRounds)
-        if(quizRound.is_finished)
-            score += quizRound.current_score;
+        score += quizRound.current_score;
     for(const rightPriceRound of rightPriceRounds)
-        if(rightPriceRound.is_finished)
-            score += rightPriceRound.current_score;
+        score += rightPriceRound.current_score;
     return score;
 }
 
@@ -62,11 +60,9 @@ async function getGameRecap(req, res){
         const rightPriceRounds = await RightPriceRounds.findAll({where: {game_id: gameId}});
         const recap = [];
         for(const quizRound of quizRounds)
-            if(quizRound.is_finished)
-                recap.push({gameType: "Quiz", score: quizRound.current_score, createdAt: quizRound.created_at});
+            recap.push({gameType: "Quiz", score: quizRound.current_score, createdAt: quizRound.created_at});
         for(const rightPriceRound of rightPriceRounds)
-            if(rightPriceRound.is_finished)
-                recap.push({gameType: "RightPrice", score: rightPriceRound.current_score, createdAt: rightPriceRound.created_at});
+            recap.push({gameType: "RightPrice", score: rightPriceRound.current_score, createdAt: rightPriceRound.created_at});
         recap.sort((a, b) => a.createdAt - b.createdAt);
         return res.status(StatusCodes.OK).json({recap: recap, score: await computeGameScore(gameId)});
     }catch (e){
