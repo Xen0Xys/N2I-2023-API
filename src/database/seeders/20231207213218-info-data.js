@@ -48,7 +48,7 @@ module.exports = {
             {
                 id: 5,
                 type: "image",
-                url: "https://www.rts.ch/2012/12/24/10/42/4531335.image?w=1280&h=720",
+                url: "https://www.tzcld.fr/faq/wp-content/uploads/2021/03/Fabrique_Du_Consensus.jpg",
                 title: "Le réchauffement climatique ne fait pas totalement consensus, si ?",
                 content: "Déjà diagnostiqué dans les années 1990, le réchauffement climatique s’est poursuivi depuis. Les rapports successifs du Giec n'ont cessé de réaffirmer le consensus scientifique autour de ce réchauffement global. Entre 2009 et 2015, le consensus quant à son origine anthropique se situait autour de 97 %. Une évaluation parue dans le Bulletin of Science, Technology & Society le 20 novembre 2019 a poussé ce taux encore un peu plus loin. Au total, ce sont plus de 11 600 articles publiés sur le sujet dans des revues scientifiques spécialisées, entre le 1er janvier et début août 2019, qui ont été examinés. Or, il apparaît que 100 % des articles soutiennent l’idée d’une cause anthropique au réchauffement global actuel.",
                 created_at: new Date(),
@@ -59,7 +59,7 @@ module.exports = {
 
     async down(queryInterface, Sequelize){
         await queryInterface.bulkDelete("info_data", {
-            id: [1, 2, 3],
+            id: [1, 2, 3, 4, 5],
         });
     }
 };

@@ -10,7 +10,7 @@
         "logging": true
     },
     "production": {
-        "storage": "database/database.db",
+        "storage": "data/database.db",
         "dialect": "sqlite",
         "logging": false
     }
