@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         sequelize,
         modelName: "MemoryData",
+        tableName: "memory_data",
         createdAt: "created_at",
         updatedAt: "updated_at",
     });

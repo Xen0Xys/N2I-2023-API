@@ -7,7 +7,7 @@
     "test": {
         "storage": ":memory:",
         "dialect": "sqlite",
-        "logging": false
+        "logging": true
     },
     "production": {
         "storage": "database/database.db",

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const {Game, QuizData, QuizRounds} = require("@database/database");
+const {Game, QuizData, QuizRounds, User} = require("@database/database");
 
 const typeSuite = ["quiz", "right_price", "info", "right_price", "memory", "info", "quiz", "quiz", "right_price", "info"];
 
@@ -33,6 +33,7 @@ async function getNextRoundType(gameId){
 }
 
 async function generateQuizRound(gameId){
+    await Game.findAll();
     const quizData = await QuizData.findAll();
     const randomIndex = Math.floor(Math.random() * quizData.length);
     const currentQuizData = quizData[randomIndex];

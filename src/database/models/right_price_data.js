@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         sequelize,
         modelName: "RightPriceData",
+        tableName: "right_price_data",
         createdAt: "created_at",
         updatedAt: "updated_at",
     });
