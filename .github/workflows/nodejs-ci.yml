@@ -64,4 +64,4 @@ jobs:
             docker pull xen0xys/n2i-2023-api:latest
             docker stop n2i-2023-api || true
             docker rm n2i-2023-api || true
-            docker run -d -p 3000:3000 -e DOTENV_KEY=${{ secrets.DOTENV_KEY }} -v /home/${{ secrets.SERVER_USERNAME }}/keys:/home/keys --name n2i-2023-api --restart on-failure:2 xen0xys/n2i-2023-api:latest
+            docker run -d -p 4000:4000 -e DOTENV_KEY=${{ secrets.DOTENV_KEY }} -v /home/${{ secrets.SERVER_USERNAME }}/keys:/home/keys --name n2i-2023-api --restart on-failure:2 xen0xys/n2i-2023-api:latest
