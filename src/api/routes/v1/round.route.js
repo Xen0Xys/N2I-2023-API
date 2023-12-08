@@ -1,8 +1,5 @@
-/* eslint-disable no-unused-vars */
-const jwtAuth = require("@middlewares/jwt.middleware");
 const gameJwtAuth = require("@middlewares/game-jwt.middleware");
-const {generateNextRound, getCurrentRound} = require("@controllers/round.controller");
-const {takeAnswer} = require("../../controllers/round.controller");
+const {generateNextRound, getCurrentRound, takeAnswer} = require("@controllers/round.controller");
 
 module.exports = (router) => {
     router.post("/round/next",
