@@ -2,8 +2,8 @@
 const {Game, QuizData, QuizRounds, InfoData, InfoRounds, RightPriceData, RightPriceRounds, MemoryData, MemoryRounds} = require("@database/database");
 const {StatusCodes} = require("http-status-codes");
 
-// const typeSuite = ["quiz", "right_price", "info", "right_price", "memory", "info", "quiz", "quiz", "right_price", "info"];
-const typeSuite = ["quiz", "right_price", "info", "right_price", "info", "quiz", "right_price", "quiz", "right_price", "info"];
+const typeSuite = ["quiz"];
+// const typeSuite = ["quiz", "right_price", "info", "right_price", "info", "quiz", "right_price", "quiz", "right_price", "info"];
 const maxQuizScore = 3;
 const maxRightPriceScore = 3;
 
