@@ -46,6 +46,7 @@ async function generateQuizRound(gameId){
     return {
         round_type: "quiz",
         round_id: round.id,
+        image: currentQuizData.image,
         question: currentQuizData.question,
         answers: answers
     };
