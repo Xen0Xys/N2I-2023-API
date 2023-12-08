@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 const jwtAuth = require("@middlewares/jwt.middleware");
 const gameJwtAuth = require("@middlewares/game-jwt.middleware");
-const {startGame, getGame} = require("@controllers/game.controller");
+const {startGame, getGame, getGameRecap} = require("@controllers/game.controller");
 
 module.exports = (router) => {
     router.post("/game",
@@ -17,6 +17,6 @@ module.exports = (router) => {
     router.get("/game/end",
         gameJwtAuth,
         async(req, res) => {
-            // TODO
+            await getGameRecap(req, res);
         });
 };

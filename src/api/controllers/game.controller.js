@@ -50,7 +50,31 @@ async function computeGameScore(gameId){
     return score;
 }
 
+async function getGameRecap(req, res){
+    try{
+        const gameId = req.user.game_id;
+        const game = await Game.findByPk(gameId);
+        if(!game) return res.status(StatusCodes.NOT_FOUND).json({message: "Game not found"});
+        if(!game.is_finished) return res.status(StatusCodes.BAD_REQUEST).json({message: "Game is not finished"});
+        const quizRounds = await QuizRounds.findAll({where: {game_id: gameId}});
+        const rightPriceRounds = await RightPriceRounds.findAll({where: {game_id: gameId}});
+        const recap = [];
+        for(const quizRound of quizRounds)
+            if(quizRound.is_finished)
+                recap.push({gameType: "Quiz", score: quizRound.current_score, createdAt: quizRound.created_at});
+        for(const rightPriceRound of rightPriceRounds)
+            if(rightPriceRound.is_finished)
+                recap.push({gameType: "RightPrice", score: rightPriceRound.current_score, createdAt: rightPriceRound.created_at});
+        recap.sort((a, b) => a.createdAt - b.createdAt);
+        return res.status(StatusCodes.OK).json({recap: recap, score: computeGameScore(gameId)});
+    }catch (e){
+        console.log(e);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: ReasonPhrases.INTERNAL_SERVER_ERROR});
+    }
+}
+
 module.exports = {
     startGame,
     getGame,
+    getGameRecap,
 };
